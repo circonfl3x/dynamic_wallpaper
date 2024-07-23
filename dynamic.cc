@@ -9,8 +9,9 @@
 #include <string.h>
 #include <sys/stat.h>
 #include <sys/types.h>
+using namespace dynamic;
 
-void fs_crawler(const char *fpath) {
+void dynamic::fs_crawler(const char *fpath) {
 
   DIR *dirtree = opendir(fpath);
   struct stat st;
@@ -46,25 +47,26 @@ void fs_crawler(const char *fpath) {
         ;
       else if (strc(tok, (char *)"jpg") || strc(tok, (char *)"png") || //looking at headers is too much work
                strc(tok, (char *)"jpeg") || strc(tok, (char *)"PNG"))
-        walls_dyn.push_back(child->d_name);
+        wallpapers.push_back(child->d_name);
       free(dup);
     }
   }
 }
 
-void get_time() {
+void dynamic::get_time() {
   time_c t;
-  for (std::string wall : walls_dyn) {
-    char *dup = strdup(wall.c_str());
+  for (std::string wallpaper : wallpapers) {
+    char *dup = strdup(wallpaper.c_str());
     char *tok = strtok(dup, ":");
 
     try {
-      t.hours = std::atol(wall.c_str());
+      t.hours = std::atol(wallpaper.c_str());
     } catch (std::out_of_range &e) {
       std::cout << "Number of hours too large" << std::endl;
       exit(1);
     } catch (std::invalid_argument &e) {
-      std::cout << "Unknown clock format " << wall << std::endl;
+      std::cout << "Unknown clock format " << wallpaper << std::endl;
+      exit(1);
     }
     tok = strtok(NULL, ":");
     if (tok != NULL) {
@@ -72,25 +74,28 @@ void get_time() {
         t.minutes = atoi(tok);
       } catch (std::out_of_range &e) {
         std::cout << "Number of minutes too large" << std::endl;
+        exit(1);
       } catch (std::invalid_argument &e) {
-        std::cout << "Unknown clock format " << wall << std::endl;
+        std::cout << "Unknown clock format " << wallpaper << std::endl;
+        exit(1);
       }
     } else
       t.minutes = 0;
     if (t.hours > 23) {
-      std::cout << "Number of hours too large" << std::endl;
-      exit(1);
+        if(t.hours > 24) std::cout << "How many hours are there in a day?" << std::endl;
+        else std::cout << "Number of hours too large" << std::endl;
+        exit(1);
     } else if (t.minutes > 59) {
       std::cout << "Bro do you know how to count minutes lmao" << std::endl;
       exit(1);
     }
-    dyn_walls_map.insert({t, wall});
+    map.insert({t, wallpaper});
     free(dup);
   }
 }
 
 
-std::map<time_c, std::string>::iterator _current
+std::map<time_c, std::string>::iterator dynamic::_current
   (struct tm *t, std::map<time_c, std::string> *map_wallpapers)
 {
 

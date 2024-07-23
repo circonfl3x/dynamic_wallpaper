@@ -1,5 +1,6 @@
 #include "wall.hh"
 #include "dynamic.hh"
+#include "args.hh"
 #include <cstring>
 #include <ctime>
 #include <iostream>
@@ -9,9 +10,13 @@
 #include <time.h>
 #include <unistd.h>
 int main(int argc, char **argv) {
-
-  arg_parser(argc, argv);
-
+    
+    try{
+        args::parser(argc, argv);
+    }catch(args::error &e){
+        std::cout << e.what() << std::endl;
+        exit(1);
+    }
   if ((flags & (1 << WALLPAPERS)) == 0) {
     std::cout << "Wallpapers not defined!" << std::endl;
     exit(1);
@@ -28,21 +33,21 @@ int main(int argc, char **argv) {
 
     // DYNAMIC SECTION
 
-    fs_crawler(dynamic_walls_dir);
-    std::string dynamic_fpath = dynamic_walls_dir;
+    dynamic::fs_crawler(dynamic::path);
+    std::string dynamic_fpath = dynamic::path;
     if (dynamic_fpath.at(dynamic_fpath.length() - 1) != '/')
       dynamic_fpath += "/";
-    if (walls_dyn.size() == 0) {
+    if (dynamic::wallpapers.size() == 0) {
       std::cout << "No wallpapers in directory!" << std::endl;
       exit(1);
     }
 
-    get_time();
+    dynamic::get_time();
 
-    for (std::string a : walls_dyn) {
+    for (std::string a : dynamic::wallpapers) {
       std::cout << a << std::endl;
 
-      if (dyn_walls_map.size() == 0) {
+      if (dynamic::wallpapers.size() == 0) {
         std::cout << "No valid wallpaper name available" << std::endl;
       }
     }
@@ -69,9 +74,9 @@ int main(int argc, char **argv) {
       } else {
         pidS = pid_of_str("pidof swaybg");
         current_hour = localt->tm_hour;
-        current_wallpaper = _current(localt, &dyn_walls_map);
-        change_wallpaper(dynamic_walls_dir + current_wallpaper->second);
-        sleep(1);
+        current_wallpaper = dynamic::_current(localt, &dynamic::map);
+      
+        change_wallpaper(dynamic::path + current_wallpaper->second);
         std::string s = "kill ";
         s+=pidS;
         system(s.c_str());
