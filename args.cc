@@ -1,6 +1,7 @@
 #include "wall.hh"
 #include "args.hh"
 #include "dynamic.hh"
+#include "config.hh"
 #include <iostream>
 #include <string.h>
 #include <sys/stat.h>
@@ -63,7 +64,7 @@ void args::parser(int argc, char **argv){
             printf("'%s' is not a file", argv[i]);
             throw(error(""));
         }
-        config_path = argv[i+1];
+        config::path = argv[i+1];
         ++i;
       }else{
         std::cout << "Uknown argument '" << argv[i] << "'";
