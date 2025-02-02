@@ -1,4 +1,4 @@
-# Dynamic wallpaper daemon targeted towards tiling wm managers
+# (DEPRECATED replaced by Dynwm) Dynamic wallpaper daemon targeted towards tiling wm managers
 
 ## Dependencies
 - swaybg
